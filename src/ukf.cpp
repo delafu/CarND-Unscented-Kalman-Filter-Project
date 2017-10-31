@@ -92,79 +92,51 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
   measurements.
   */
   
-  // skip predict/update if sensor type is ignored
-  if ((meas_package.sensor_type_ == MeasurementPackage::RADAR && use_radar_) ||
-      (meas_package.sensor_type_ == MeasurementPackage::LASER && use_laser_)) {
     
     /*****************************************************************************
     *  Initialization
     ****************************************************************************/
-    if (!is_initialized_) {
-      /**
+  if (!is_initialized_) {
+    /**
       TODO:
       * Initialize the state x_ with the first measurement.
       * Create the covariance matrix.
       * Remember: you'll need to convert radar from polar to cartesian coordinates.
-      */
-      /**
-      Initialize state.
-      */
+    */
+    x_ << 1, 1, 1, 1, 0.1;
 
-      // first measurement
-      x_ << 1, 1, 1, 1, 0.1;
+    P_ << 1, 0, 0, 0, 0,
+          0, 1, 0, 0, 0,
+          0, 0, 1, 0, 0,
+          0, 0, 0, 1, 0,
+          0, 0, 0, 0, 1;
 
-      // init covariance matrix
-      P_ << 1, 0, 0, 0, 0,
-            0, 1, 0, 0, 0,
-            0, 0, 1, 0, 0,
-            0, 0, 0, 1, 0,
-            0, 0, 0, 0, 1;
-
-      // init timestamp
-      time_us_ = meas_package.timestamp_;
-
-      if (meas_package.sensor_type_ == MeasurementPackage::LASER && use_laser_) {
-
-        x_(0) = meas_package.raw_measurements_(0);
-        x_(1) = meas_package.raw_measurements_(1);
-
-      }
-      else if (meas_package.sensor_type_ == MeasurementPackage::RADAR && use_radar_) {
-        /**
-        Convert radar from polar to cartesian coordinates and initialize state.
-        */
-        float ro = meas_package.raw_measurements_(0);
-        float phi = meas_package.raw_measurements_(1);
-        float ro_dot = meas_package.raw_measurements_(2);
-        x_(0) = ro     * cos(phi);
-        x_(1) = ro     * sin(phi);
-      }
-
-      // done initializing, no need to predict or update
-      is_initialized_ = true;
-
-      return;
-    }
-
-    /*****************************************************************************
-    *  Prediction
-    ****************************************************************************/
-    //compute the time elapsed between the current and previous measurements
-    float dt = (meas_package.timestamp_ - time_us_) / 1000000.0;	//dt - expressed in seconds
     time_us_ = meas_package.timestamp_;
 
-    Prediction(dt);
+    if (meas_package.sensor_type_ == MeasurementPackage::LASER && use_laser_) {
 
-    /*****************************************************************************
-    *  Update
-    ****************************************************************************/
+      x_(0) = meas_package.raw_measurements_(0);
+      x_(1) = meas_package.raw_measurements_(1);
 
-    if (meas_package.sensor_type_ == MeasurementPackage::LASER) {
-      UpdateLidar(meas_package);
+    } else if (meas_package.sensor_type_ == MeasurementPackage::RADAR && use_radar_) {
+      float ro = meas_package.raw_measurements_(0);
+      float phi = meas_package.raw_measurements_(1);
+      float ro_dot = meas_package.raw_measurements_(2);
+      x_ << rho * cos(phi), rho * sin(phi), rho_dot * cos(phi), rho_dot * sin(phi);
     }
-    else if (meas_package.sensor_type_ == MeasurementPackage::RADAR) {
-      UpdateRadar(meas_package);
-    }
+
+    is_initialized_ = true;
+
+    return;
+  }
+  double deltat = (meas_package.timestamp_ - time_us_) / 1000000.0;	//dt - expressed in seconds
+  time_us_ = meas_package.timestamp_;
+  Prediction(deltat);
+
+  if (meas_package.sensor_type_ == MeasurementPackage::LASER) {
+    UpdateLidar(meas_package);
+  } else if (meas_package.sensor_type_ == MeasurementPackage::RADAR) {
+    UpdateRadar(meas_package);
   }
 }
 
@@ -180,31 +152,20 @@ void UKF::Prediction(double delta_t) {
   vector, x_. Predict sigma points, the state, and the state covariance matrix.
   */
 
-  /*****************************************************************************
-  *  Generate Sigma Points
-  ****************************************************************************/
-  //create sigma point matrix
   MatrixXd Xsig = MatrixXd(n_x_, 2 * n_x_ + 1);
 
-  //calculate square root of P
   MatrixXd A = P_.llt().matrixL();
 
-  //set lambda for non-augmented sigma points
   lambda_ = 3 - n_x_;
 
-  //set first column of sigma point matrix
   Xsig.col(0) = x_;
 
-  //set remaining sigma points
   for (int i = 0; i < n_x_; i++)
   {
     Xsig.col(i + 1) = x_ + sqrt(lambda_ + n_x_) * A.col(i);
     Xsig.col(i + 1 + n_x_) = x_ - sqrt(lambda_ + n_x_) * A.col(i);
   }
 
-  /*****************************************************************************
-  *  Augment Sigma Points
-  ****************************************************************************/
   //create augmented mean vector
   VectorXd x_aug = VectorXd(n_aug_);
 
@@ -239,9 +200,6 @@ void UKF::Prediction(double delta_t) {
     Xsig_aug.col(i + 1 + n_aug_) = x_aug - sqrt(lambda_ + n_aug_) * L.col(i);
   }
 
-  /*****************************************************************************
-  *  Predict Sigma Points
-  ****************************************************************************/
   //predict sigma points
   for (int i = 0; i < 2 * n_aug_ + 1; i++)
   {
@@ -286,10 +244,6 @@ void UKF::Prediction(double delta_t) {
     Xsig_pred_(3, i) = yaw_p;
     Xsig_pred_(4, i) = yawd_p;
   }
-
-  /*****************************************************************************
-  *  Convert Predicted Sigma Points to Mean/Covariance
-  ****************************************************************************/
 
   // set weights
   double weight_0 = lambda_ / (lambda_ + n_aug_);
