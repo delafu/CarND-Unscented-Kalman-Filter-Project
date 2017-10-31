@@ -135,7 +135,7 @@ void UKF::Prediction(double delta_t) {
   /* Calculate sigma points */
 
   //create augmented mean state
-  cout << "Prediction";
+  cout << "Prediction\n";
   VectorXd x_aug = VectorXd(n_aug_);
   MatrixXd P_aug = MatrixXd(n_aug_, n_aug_);
   MatrixXd Xsig_aug = MatrixXd(n_aug_, 2 * n_aug_ + 1);
@@ -154,6 +154,9 @@ void UKF::Prediction(double delta_t) {
   MatrixXd L = P_aug.llt().matrixL();
 
   //create augmented sigma points
+
+  cout << "Create augmented sigma points";
+
   Xsig_aug.col(0)  = x_aug;
   for (int i = 0; i< n_aug_; i++)
   {
@@ -162,6 +165,8 @@ void UKF::Prediction(double delta_t) {
   }
 
   /* Predict sigma points */
+
+  cout << "Predict sigma points";
 
   for (int i = 0; i< 2*n_aug_ + 1; i++)
   {
@@ -208,6 +213,8 @@ void UKF::Prediction(double delta_t) {
   }
 
   /* Predict mean and covariance */
+
+  cout << "Predict mean and covariance";
 
   // set weights
   double weight_0 = lambda_/(lambda_+n_aug_);
