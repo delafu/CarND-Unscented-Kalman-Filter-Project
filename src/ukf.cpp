@@ -135,7 +135,7 @@ void UKF::Prediction(double delta_t) {
   /* Calculate sigma points */
 
   //create augmented mean state
-  cout << "Prediction\n";
+  cout << "Prediction";
   VectorXd x_aug = VectorXd(n_aug_);
   MatrixXd P_aug = MatrixXd(n_aug_, n_aug_);
   MatrixXd Xsig_aug = MatrixXd(n_aug_, 2 * n_aug_ + 1);
