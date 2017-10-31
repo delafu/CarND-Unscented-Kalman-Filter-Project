@@ -73,10 +73,10 @@ UKF::UKF() {
   weights_ = VectorXd(2 * n_aug_ + 1);
 
   // the current NIS for radar
-  NIS_radar_ = 0.0;
+  //NIS_radar_ = 0.0;
 
   // the current NIS for laser
-  NIS_laser_ = 0.0;
+  //NIS_laser_ = 0.0;
 }
 
 UKF::~UKF() {}
