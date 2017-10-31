@@ -91,11 +91,7 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
   Complete this function! Make sure you switch between lidar and radar
   measurements.
   */
-  
-    
-    /*****************************************************************************
-    *  Initialization
-    ****************************************************************************/
+
   if (!is_initialized_) {
     /**
       TODO:
@@ -152,24 +148,8 @@ void UKF::Prediction(double delta_t) {
   vector, x_. Predict sigma points, the state, and the state covariance matrix.
   */
 
-  MatrixXd Xsig = MatrixXd(n_x_, 2 * n_x_ + 1);
-
-  MatrixXd A = P_.llt().matrixL();
-
-  lambda_ = 3 - n_x_;
-
-  Xsig.col(0) = x_;
-
-  for (int i = 0; i < n_x_; i++)
-  {
-    Xsig.col(i + 1) = x_ + sqrt(lambda_ + n_x_) * A.col(i);
-    Xsig.col(i + 1 + n_x_) = x_ - sqrt(lambda_ + n_x_) * A.col(i);
-  }
-
-  //create augmented mean vector
   VectorXd x_aug = VectorXd(n_aug_);
 
-  //create augmented state covariance
   MatrixXd P_aug = MatrixXd(n_aug_, n_aug_);
 
   //create sigma point matrix
