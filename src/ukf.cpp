@@ -121,7 +121,7 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
     } else if (meas_package.sensor_type_ == MeasurementPackage::RADAR && use_radar_) {
       float rho = meas_package.raw_measurements_(0);
       float phi = meas_package.raw_measurements_(1);
-      float ro_dot = meas_package.raw_measurements_(2);
+      float rho_dot = meas_package.raw_measurements_(2);
       x_ << rho * cos(phi), rho * sin(phi), rho_dot * cos(phi), rho_dot * sin(phi);
     }
 
