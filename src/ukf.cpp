@@ -403,7 +403,7 @@ void UKF::UpdateLidar(MeasurementPackage meas_package) {
   VectorXd z_diff = z - z_pred;
 
   //calculate NIS
-  NIS_laser_ = z_diff.transpose() * S.inverse() * z_diff;
+  //NIS_laser_ = z_diff.transpose() * S.inverse() * z_diff;
 
   //update state mean and covariance matrix
   x_ = x_ + K * z_diff;
@@ -514,7 +514,7 @@ void UKF::UpdateRadar(MeasurementPackage meas_package) {
   while (z_diff(1)<-M_PI) z_diff(1) += 2.*M_PI;
 
   //calculate NIS
-  NIS_radar_ = z_diff.transpose() * S.inverse() * z_diff;
+  //NIS_radar_ = z_diff.transpose() * S.inverse() * z_diff;
 
   //update state mean and covariance matrix
   x_ = x_ + K * z_diff;
