@@ -214,7 +214,7 @@ void UKF::Prediction(double delta_t) {
 
   /* Predict mean and covariance */
 
-  cout << "Predict mean and covariance";
+  cout << "Predict mean and covariance\n";
 
   // set weights
   double weight_0 = lambda_/(lambda_+n_aug_);
@@ -224,12 +224,15 @@ void UKF::Prediction(double delta_t) {
     weights_(i) = weight;
   }
 
+  cout << "Set weights\n";
   //predicted state mean
   x_.fill(0.0);
   for (int i = 0; i < 2 * n_aug_ + 1; i++) {  //iterate over sigma points
     x_ = x_ + weights_(i) * Xsig_pred_.col(i);
   }
 
+  cout << "Predicted state mean\n";
+  
   //predicted state covariance matrix
   P_.fill(0.0);
   for (int i = 0; i < 2 * n_aug_ + 1; i++) {  //iterate over sigma points
