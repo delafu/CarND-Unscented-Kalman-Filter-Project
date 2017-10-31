@@ -135,7 +135,7 @@ void UKF::Prediction(double delta_t) {
   /* Calculate sigma points */
 
   //create augmented mean state
-
+  cout << "Prediction";
   VectorXd x_aug = VectorXd(n_aug_);
   MatrixXd P_aug = MatrixXd(n_aug_, n_aug_);
   MatrixXd Xsig_aug = MatrixXd(n_aug_, 2 * n_aug_ + 1);
@@ -253,6 +253,7 @@ void UKF::UpdateLidar(MeasurementPackage meas_package) {
 
   You'll also need to calculate the lidar NIS.
   */
+  cout << "Lidar";
   int n_z = 2;
 
   VectorXd Z = meas_package.raw_measurements_;
@@ -335,6 +336,8 @@ void UKF::UpdateRadar(MeasurementPackage meas_package) {
   You'll also need to calculate the radar NIS.
   */
   //transform sigma points into measurement space
+  cout << "Radar";
+
   VectorXd Z = meas_package.raw_measurements_;
   int n_z = 3;
   MatrixXd Tc = MatrixXd(n_x_, n_z);
