@@ -158,7 +158,7 @@ void UKF::Prediction(double delta_t) {
   for (int i = 0; i< n_aug_; i++)
   {
     Xsig_aug.col(i+1)       = x_aug + sqrt(lambda_+n_aug_) * L.col(i);
-    Xsig_aug.col(i+1+n_aug) = x_aug - sqrt(lambda_+n_aug_) * L.col(i);
+    Xsig_aug.col(i+1+n_aug_) = x_aug - sqrt(lambda_+n_aug_) * L.col(i);
   }
 
   /* Predict sigma points */
@@ -335,7 +335,7 @@ void UKF::UpdateRadar(MeasurementPackage meas_package) {
   You'll also need to calculate the radar NIS.
   */
   //transform sigma points into measurement space
-  VectorXd z = meas_package.raw_measurements_;
+  VectorXd Z = meas_package.raw_measurements_;
   int n_z = 3;
   MatrixXd Tc = MatrixXd(n_x_, n_z);
   MatrixXd Zsig = MatrixXd(n_z, 2 * n_aug_ + 1);
